@@ -6,7 +6,7 @@ import fin_data
 def main():
     
     
-    st.set_page_config(page_title='SugFinance', page_icon=':classical_building:',
+    st.set_page_config(page_title='SugFinance',
                    layout="centered", initial_sidebar_state="auto", menu_items=None)
     
     pair = st.sidebar.selectbox("Selecione o par", ["EUR-USD", "GBP-USD","BRL-USD"])
