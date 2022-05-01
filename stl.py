@@ -9,10 +9,10 @@ def main():
     st.set_page_config(page_title='SugFinance', page_icon=':classical_building:',
                    layout="centered", initial_sidebar_state="auto", menu_items=None)
     
-    pair = st.sidebar.selectbox("Selecione o par", ["EUR-USD", "GBP-USD","Bitcoin-USD"])
+    pair = st.sidebar.selectbox("Selecione o par", ["EUR-USD", "GBP-USD","BRL-USD"])
     
     translate = {"EUR-USD":'EURUSD=X',
-                 "Bitcoin-USD":'BTC-USD',
+                 "BRL-USD":'BRLUSD=X',
                  "GBP-USD":"GBPUSD=X"}
     
     return analysis(translate[pair])
