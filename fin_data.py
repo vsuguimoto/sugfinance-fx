@@ -18,9 +18,9 @@ def download_transform(ticker: str):
     import pandas as pd
     import yfinance as yf
 
-    from ta.volatility import BollingerBands
+    from ta.volatility import BollingerBands, AverageTrueRange
     from ta.momentum import RSIIndicator
-    from ta.trend import CCIIndicator, SMAIndicator, MACD
+    from ta.trend import CCIIndicator, SMAIndicator
 
     df = yf.download(ticker, start=pd.Timestamp.today(
     ) - pd.Timedelta(365*5, 'days'), end=pd.Timestamp.today()).reset_index()
@@ -51,14 +51,10 @@ def download_transform(ticker: str):
     df['FT_RSI_Overbough'] = [1 if x > 70 else 0 for x in df.RSI]
     df['FT_RSI_Oversold'] = [1 if x < 30 else 0 for x in df.RSI]
 
-    df['MACD'] = MACD(df.Close_shift,
-                      window_fast=12,
-                      window_slow=26,
-                      window_sign=9,
-                      fillna=False).macd_diff()
-
-    df['FT_MACD_H'] = [1 if x > .5 else 0 for x in df.MACD]
-    df['FT_MACD_L'] = [1 if x < -.5 else 0 for x in df.MACD]
+    df['FT_ATR'] = AverageTrueRange(close=df.Close_shift,
+                      high=df.High.shift(1),
+                      low=df.Low.shift(1),
+                      fillna=False).average_true_range()
 
     df['CCI'] = CCIIndicator(high=df.High.shift(1),
                              low=df.Low.shift(1),
