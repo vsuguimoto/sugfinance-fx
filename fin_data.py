@@ -2,6 +2,18 @@ import streamlit as st
 
 
 def download_transform(ticker: str):
+    '''
+    ticker: string com o nome do ticker no Yahoo Finance
+    
+    return: Pandas Dataframe com todos as features disponíveis
+    
+    
+    Função utilizada para baixar os dados do ticker utilizando
+    o pacote yfinance.
+    Utiliza-se um filtro para remover colunas que não agregam
+    informação, ou seja não possuem valores distintos.
+    '''
+    
 
     import pandas as pd
     import yfinance as yf
@@ -61,13 +73,22 @@ def download_transform(ticker: str):
     df = df.dropna()
     
     # Remove colunas que não trazen informação
-    non_unique_cols = [c for c in list(df) if len(df[c].unique()) > 1]
+    non_unique_cols = [c for c in df.columns if len(df[c].unique()) > 1]
     df = df[non_unique_cols]
     
     return df
 
 
-def train_test_predict(df, FEATURES, TARGET):
+def train_test_predict(df, FEATURES: list, TARGET: list):
+    '''
+    df: Pandas DataFrame com todas as features
+    FEATURES: lista com as features que serão utilizadas para treinar
+    o modelo
+    TARGET: nome da coluna alvo
+    
+    return: Pandas DataFrame com as previsões, Modelo fitado da regressão
+    logística 
+    '''
     
     import pandas as pd
     from statsmodels.discrete.discrete_model import Logit
@@ -86,7 +107,15 @@ def train_test_predict(df, FEATURES, TARGET):
     return df, lr
 
 
-def model_prediction_return(df, prediction_col, target_col, return_col):
+def model_prediction_return(df, prediction_col:str, target_col:str, return_col:str):
+    '''
+    df: Pandas Dataframe com a coluna de previsões realizadas pelo modelo
+    prediction_col: string com o nome da coluna de previsões do modelo
+    return_col: string com o nome da coluna dos retornos do modelo
+    
+    return: Pandas Dataframe com uma coluna de retorno das previsões do modelo
+    '''
+    
     
     import pandas as pd
     
@@ -99,6 +128,12 @@ def model_prediction_return(df, prediction_col, target_col, return_col):
 
 
 def bnh_return(df, close_price_col):
+    '''
+    df: Pandas Dataframe com o preço de fechamento
+    
+    return: Pandas Dataframe com o retorno do ativo por Buy and Hold
+    '''
+    
     
     df.loc[:,'BNH_Return'] = (df.loc[:,close_price_col]/df.loc[:,close_price_col].iloc[0]) - 1
     
@@ -106,6 +141,12 @@ def bnh_return(df, close_price_col):
 
 
 def metric_accuracy(df):
+    '''
+    df: Pandas Dataframe com o alvo e as previsões do modelo
+    
+    return: Acurácia em percentual do modelo
+    '''
+    
     from sklearn.metrics import accuracy_score
     
     acc_score = accuracy_score(df.TARGET, df.PREDICT)
@@ -115,6 +156,12 @@ def metric_accuracy(df):
 
 def metric_max_dd(df, return_prediction_col):
     '''
+    df: Pandas Dataframe com a coluna do retorno das previsões do modelo
+    return_prediction_col: string com o nome da coluna de retorno das previsões
+    
+    return: drawdown maximo do modelo em percentual
+    
+    Referência utilizada
     https://quant.stackexchange.com/questions/55130/global-maximum-drawdown-and-maximum-drawdown-duration-implementation-in-python
     '''
     import pandas as pd
@@ -129,7 +176,14 @@ def metric_max_dd(df, return_prediction_col):
     return max_drawdown * 100
   
     
-def model_last_decision(df, predict_col, date_col):
+def model_last_decision(df, predict_col:str, date_col:str):
+    '''
+    df: Pandas Dataframe com a coluna de previsões do modelo e data 
+    predict_col: string com o nome da coluna de previsões
+    date_col: string com o nome da coluna de data
+    
+    return: previsão mais recente do modelo e a data da previsão formatada
+    '''
     
     import pandas as pd
     
@@ -142,6 +196,15 @@ def model_last_decision(df, predict_col, date_col):
 
 
 def fig_returns(df):
+    '''
+    df: Pandas dataframe com o retorno por Buy and Hold e Retorno do modelo e Data
+    
+    return: Plotly figure, gráfico comparando o retorno por Buy and Hold ou por seguir
+    o modelo
+    
+    Nota: As colunas estão Hard Coded como BNH_Return, MODEL_RETURN, Date
+    '''
+    
     
     import plotly.graph_objects as go
     
